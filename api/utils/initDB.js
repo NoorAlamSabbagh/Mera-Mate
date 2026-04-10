@@ -29,9 +29,12 @@ const initDB = async () => {
 
   try {
     console.log('Initializing database tables...');
-    // Drop tables to ensure fresh schema
-    await pool.query(dropTasksTable);
-    await pool.query(dropUsersTable);
+    // In production, we don't want to drop tables
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('Dropping tables for development...');
+      await pool.query(dropTasksTable);
+      await pool.query(dropUsersTable);
+    }
     
     await pool.query(createUserTable);
     console.log('Users table created');

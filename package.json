@@ -2,8 +2,11 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=18.x"
+  },
   "scripts": {
-    "dev": "next dev --webpack",
+    "dev": "concurrently \"next dev\" \"nodemon api/index.js\"",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -11,10 +14,18 @@
   "dependencies": {
     "@swc/helpers": "^0.5.21",
     "axios": "latest",
+    "bcryptjs": "^3.0.3",
     "bootstrap": "^5.3.3",
+    "concurrently": "^9.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.1",
+    "express": "^5.2.1",
     "form-data": "^4.0.5",
+    "jsonwebtoken": "^9.0.3",
     "lucide-react": "latest",
     "next": "^16.2.3",
+    "nodemon": "^3.1.9",
+    "pg": "^8.20.0",
     "react": "19.2.4",
     "react-bootstrap": "latest",
     "react-dom": "19.2.4",
