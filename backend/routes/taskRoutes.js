@@ -6,10 +6,11 @@ const {
   updateTask,
   deleteTask,
 } = require('../controllers/taskController');
-const protect = require('../middleware/authMiddleware');
+const { protect, authorize } = require('../middleware/authMiddleware');
 
 router.use(protect);
 
+// All users can CRUD their own tasks
 router.route('/')
   .post(createTask)
   .get(getTasks);
@@ -17,5 +18,10 @@ router.route('/')
 router.route('/:id')
   .put(updateTask)
   .delete(deleteTask);
+
+// Example of an admin-only route
+router.get('/admin/all-stats', authorize('admin'), (req, res) => {
+  res.json({ success: true, message: 'Welcome Admin, here are some stats...' });
+});
 
 module.exports = router;

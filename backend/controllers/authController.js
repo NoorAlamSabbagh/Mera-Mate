@@ -12,7 +12,7 @@ const generateToken = (id) => {
 // @route   POST /api/auth/signup
 // @access  Public
 const signup = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, role } = req.body;
 
   try {
     const userExists = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
@@ -24,9 +24,12 @@ const signup = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Set default role to 'user' if not provided or if it's an invalid role
+    const userRole = (role === 'admin' || role === 'user') ? role : 'user';
+
     const newUser = await pool.query(
-      'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, name, email',
-      [name, email, hashedPassword]
+      'INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING id, name, email, role',
+      [name, email, hashedPassword, userRole]
     );
 
     const user = newUser.rows[0];
@@ -37,6 +40,7 @@ const signup = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role,
         token: generateToken(user.id),
       },
     });
@@ -69,6 +73,7 @@ const login = async (req, res) => {
           id: user.id,
           name: user.name,
           email: user.email,
+          role: user.role,
           token: generateToken(user.id),
         },
       });
