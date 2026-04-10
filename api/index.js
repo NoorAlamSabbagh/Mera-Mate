@@ -1,10 +1,11 @@
 const express = require('express');
 const cors = require('cors');
-const dotenv = require('dotenv');
+const path = require('path');
+// Explicitly load .env from root
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
+
 const { pool } = require('./config/db');
 const initDB = require('./utils/initDB');
-
-dotenv.config();
 
 const app = express();
 
@@ -21,38 +22,57 @@ let dbInitialized = false;
 const initialize = async () => {
   if (!dbInitialized) {
     try {
+      console.log('Running database initialization...');
       await initDB();
       dbInitialized = true;
+      console.log('Database initialization successful');
     } catch (error) {
       console.error('Database initialization failed:', error);
+      throw error; // Rethrow so the middleware can catch it and return 500
     }
   }
 };
 
 // Routes
 app.use('/api/auth', async (req, res, next) => {
-  await initialize();
-  next();
+  try {
+    await initialize();
+    next();
+  } catch (error) {
+    next(error); // Pass to error handler
+  }
 }, require('./routes/authRoutes'));
 
 app.use('/api/tasks', async (req, res, next) => {
-  await initialize();
-  next();
+  try {
+    await initialize();
+    next();
+  } catch (error) {
+    next(error); // Pass to error handler
+  }
 }, require('./routes/taskRoutes'));
 
 // Root route
-app.get('/api', async (req, res) => {
-  await initialize();
-  res.send('API is running...');
+app.get('/api', async (req, res, next) => {
+  try {
+    await initialize();
+    res.send('API is running...');
+  } catch (error) {
+    next(error);
+  }
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error('SERVER ERROR:', err);
   res.status(500).json({
     success: false,
     message: 'Internal Server Error',
-    error: process.env.NODE_ENV === 'development' ? err.message : {}
+    error: process.env.NODE_ENV !== 'production' ? {
+      message: err.message,
+      stack: err.stack,
+      hint: 'Please check your DATABASE_URL in .env'
+    } : {}
   });
 });
 
@@ -61,7 +81,7 @@ if (process.env.NODE_ENV !== 'production') {
   const startServer = async () => {
     try {
       console.log('Starting server for development...');
-      await initDB();
+      await initialize(); // Use the shared initialize function
       const PORT = process.env.PORT || 5000;
       app.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`);

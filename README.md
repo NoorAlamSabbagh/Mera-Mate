@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MeraMate - Unified Task Management Application
 
-## Getting Started
+A modern, full-stack task management application built with Next.js and Express.js, optimized for seamless deployment on Vercel.
 
-First, run the development server:
+## 🚀 Unified Project Structure
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+This project has been restructured for a single-repository deployment on Vercel.
+
+- **Frontend**: Next.js (App Router) located in the root directory.
+- **Backend**: Express.js serverless functions located in the `api/` directory.
+- **Database**: PostgreSQL (Neon.tech recommended).
+
+## 📁 Project Overview
+
+```text
+MeraMate/
+├── api/                # Express.js backend (Serverless Functions)
+│   ├── config/         # Database configuration
+│   ├── controllers/    # Route handlers
+│   ├── routes/         # API endpoints
+│   ├── utils/          # Database initialization
+│   └── index.js        # Backend entry point
+├── src/                # Next.js frontend source
+│   ├── app/            # App Router pages
+│   ├── services/       # API communication layer
+│   └── context/        # Auth state management
+├── public/             # Static assets
+├── package.json        # Unified dependencies & scripts
+└── vercel.json         # Vercel deployment configuration
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Local Development
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### 1. Prerequisites
+- Node.js (v18+)
+- PostgreSQL (Local or Cloud like [Neon](https://neon.tech))
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 2. Installation
+```bash
+npm install
+```
 
-## Learn More
+### 3. Environment Setup
+Create a `.env` file in the root directory:
+```env
+DATABASE_URL=your_postgresql_connection_string
+JWT_SECRET=your_secret_key
+FRONTEND_URL=http://localhost:3000
+NODE_ENV=development
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 4. Run the Application
+```bash
+npm run dev
+```
+- Frontend: [http://localhost:3000](http://localhost:3000)
+- Backend: [http://localhost:5000/api](http://localhost:5000/api)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🌍 Vercel Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Push the code to your GitHub repository.
+2. Import the project into Vercel.
+3. Add `DATABASE_URL`, `JWT_SECRET`, and `NODE_ENV=production` as environment variables.
+4. Vercel will automatically build the frontend and deploy the `api/` folder as serverless functions.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📄 License
+MIT

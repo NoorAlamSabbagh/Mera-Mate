@@ -43,6 +43,7 @@ const initDB = async () => {
     console.log('Database initialization completed.');
   } catch (err) {
     console.error('Error initializing database:', err);
+    throw err; // Re-throw so initialization can be tracked correctly
   } finally {
     console.log('Database connection pool ready for use');
   }

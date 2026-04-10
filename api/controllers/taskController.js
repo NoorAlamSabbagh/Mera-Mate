@@ -1,4 +1,4 @@
-const pool = require('../config/db');
+const { pool } = require('../config/db');
 
 // @desc    Create a new task
 // @route   POST /api/tasks

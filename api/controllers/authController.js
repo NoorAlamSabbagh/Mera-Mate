@@ -1,9 +1,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const pool = require('../config/db');
+const { pool } = require('../config/db');
 
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+  return jwt.sign({ id }, process.env.JWT_SECRET || 'fallback_secret', {
     expiresIn: '30d',
   });
 };
@@ -45,8 +45,12 @@ const signup = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Server error during registration' });
+    console.error('Signup Error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Server error during registration',
+      error: process.env.NODE_ENV !== 'production' ? error.message : {}
+    });
   }
 };
 
@@ -81,8 +85,12 @@ const login = async (req, res) => {
       res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Server error during login' });
+    console.error('Login Error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Server error during login',
+      error: process.env.NODE_ENV !== 'production' ? error.message : {}
+    });
   }
 };
 
