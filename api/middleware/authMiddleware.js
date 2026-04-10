@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const pool = require('../config/db');
+const { pool } = require('../config/db');
 
 const protect = async (req, res, next) => {
   let token;
@@ -7,7 +7,7 @@ const protect = async (req, res, next) => {
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
       token = req.headers.authorization.split(' ')[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'meramate_secret_key_2026_sd8f2n3m4');
 
       const userResult = await pool.query('SELECT id, name, email, role FROM users WHERE id = $1', [decoded.id]);
       
@@ -18,13 +18,17 @@ const protect = async (req, res, next) => {
       req.user = userResult.rows[0];
       next();
     } catch (error) {
-      console.error(error);
-      res.status(401).json({ success: false, message: 'Not authorized, token failed' });
+      console.error('Auth Error:', error.message);
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Not authorized, token failed',
+        error: process.env.NODE_ENV !== 'production' ? error.message : undefined
+      });
     }
   }
 
   if (!token) {
-    res.status(401).json({ success: false, message: 'Not authorized, no token' });
+    return res.status(401).json({ success: false, message: 'Not authorized, no token' });
   }
 };
 
