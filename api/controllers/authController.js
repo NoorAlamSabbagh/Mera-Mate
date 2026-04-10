@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const { pool } = require('../config/db');
 
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET || 'fallback_secret', {
+  return jwt.sign({ id }, process.env.JWT_SECRET || 'meramate_secret_key_2026_sd8f2n3m4', {
     expiresIn: '30d',
   });
 };
