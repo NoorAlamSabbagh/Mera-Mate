@@ -14,8 +14,8 @@ export const AuthProvider = ({ children }) => {
     // Import Bootstrap JS on client side
     require('bootstrap/dist/js/bootstrap.bundle.min.js');
 
-    const storedUser = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
+    const storedUser = sessionStorage.getItem('user');
+    const token = sessionStorage.getItem('token');
     if (storedUser && token) {
       setUser(JSON.parse(storedUser));
     }
@@ -23,15 +23,23 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (userData) => {
-    localStorage.setItem('user', JSON.stringify(userData.user));
-    localStorage.setItem('token', userData.user.token);
-    setUser(userData.user);
+    // Only store essential user information
+    const essentialUser = {
+      id: userData.user.id,
+      name: userData.user.name,
+      email: userData.user.email,
+      role: userData.user.role
+    };
+    
+    sessionStorage.setItem('user', JSON.stringify(essentialUser));
+    sessionStorage.setItem('token', userData.user.token);
+    setUser(essentialUser);
     router.push('/dashboard');
   };
 
   const logout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
+    sessionStorage.removeItem('user');
+    sessionStorage.removeItem('token');
     setUser(null);
     router.push('/login');
   };
